@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { MotionConfig, motion, useReducedMotion } from "framer-motion";
@@ -10,8 +10,8 @@ import {
   Briefcase,
   CodeXml,
   Download,
+  FileText,
   Moon,
-  QrCode,
   Share2,
   Sun,
   UserRoundPlus,
@@ -27,9 +27,16 @@ type CardLink = {
   description: string;
 };
 
+type CardResume = {
+  label: string;
+  shortLabel: string;
+  href: string;
+  description: string;
+  fileName: string;
+};
+
 type CardProfile = {
   name: string;
-  initials: string;
   title: string;
   location: string;
   emailLabel: string;
@@ -41,6 +48,13 @@ type CardProfile = {
     width: number;
     height: number;
   };
+  logo: {
+    src: string;
+    alt: string;
+    width: number;
+    height: number;
+  };
+  resume: CardResume;
   links: readonly CardLink[];
 };
 
@@ -100,7 +114,7 @@ export function DigitalBusinessCard({
   }, [cardUrl]);
 
   const displayCardUrl = useMemo(
-    () => resolvedCardUrl || "https://digital-business-card.netlify.app",
+    () => resolvedCardUrl || "https://reggie-alleyne-digital-card.netlify.app",
     [resolvedCardUrl],
   );
 
@@ -135,11 +149,16 @@ export function DigitalBusinessCard({
               variants={revealItem}
               transition={motionTransition}
             >
-              <div
-                aria-hidden="true"
-                className="ra-mark grid size-12 place-items-center text-[1.05rem] font-semibold"
-              >
-                {profile.initials}
+              <div className="brand-logo" aria-label={profile.logo.alt}>
+                <Image
+                  src={profile.logo.src}
+                  alt=""
+                  width={profile.logo.width}
+                  height={profile.logo.height}
+                  priority
+                  sizes="96px"
+                  className="brand-logo-image"
+                />
               </div>
 
               <button
@@ -199,36 +218,75 @@ export function DigitalBusinessCard({
                 const Icon = linkIcons[link.id];
 
                 return (
-                  <motion.div
-                    key={link.id}
-                    whileHover={shouldReduceMotion ? undefined : { y: -2 }}
-                    whileTap={shouldReduceMotion ? undefined : { scale: 0.99 }}
-                  >
-                    <Link
-                      href={trackedRoutes[link.id]}
-                      prefetch={false}
-                      className="action-row group flex min-h-[76px] items-center gap-4 rounded-[8px] border px-4 py-3 transition"
-                      aria-label={`${link.label}: ${link.description}`}
+                  <Fragment key={link.id}>
+                    <motion.div
+                      whileHover={shouldReduceMotion ? undefined : { y: -2 }}
+                      whileTap={shouldReduceMotion ? undefined : { scale: 0.99 }}
                     >
-                      <span className="action-icon grid size-12 shrink-0 place-items-center rounded-[8px]">
-                        <Icon aria-hidden="true" size={22} strokeWidth={1.8} />
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block text-[1.05rem] font-semibold">
-                          {link.label}
+                      <Link
+                        href={trackedRoutes[link.id]}
+                        prefetch={false}
+                        className="action-row group flex min-h-[76px] items-center gap-4 rounded-[8px] border px-4 py-3 transition"
+                        aria-label={`${link.label}: ${link.description}`}
+                      >
+                        <span className="action-icon grid size-12 shrink-0 place-items-center rounded-[8px]">
+                          <Icon aria-hidden="true" size={22} strokeWidth={1.8} />
                         </span>
-                        <span className="mt-1 block text-xs leading-5">
-                          {link.description}
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-[1.05rem] font-semibold">
+                            {link.label}
+                          </span>
+                          <span className="mt-1 block text-xs leading-5">
+                            {link.description}
+                          </span>
                         </span>
-                      </span>
-                      <ArrowUpRight
-                        aria-hidden="true"
-                        className="action-arrow shrink-0 transition"
-                        size={18}
-                        strokeWidth={1.8}
-                      />
-                    </Link>
-                  </motion.div>
+                        <ArrowUpRight
+                          aria-hidden="true"
+                          className="action-arrow shrink-0 transition"
+                          size={18}
+                          strokeWidth={1.8}
+                        />
+                      </Link>
+                    </motion.div>
+
+                    {link.id === "portfolio" ? (
+                      <motion.div
+                        whileHover={shouldReduceMotion ? undefined : { y: -2 }}
+                        whileTap={
+                          shouldReduceMotion ? undefined : { scale: 0.99 }
+                        }
+                      >
+                        <a
+                          href={profile.resume.href}
+                          download={profile.resume.fileName}
+                          className="action-row group flex min-h-[76px] items-center gap-4 rounded-[8px] border px-4 py-3 transition"
+                          aria-label={`${profile.resume.label}: ${profile.resume.description}`}
+                        >
+                          <span className="action-icon grid size-12 shrink-0 place-items-center rounded-[8px]">
+                            <FileText
+                              aria-hidden="true"
+                              size={22}
+                              strokeWidth={1.8}
+                            />
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block text-[1.05rem] font-semibold">
+                              {profile.resume.label}
+                            </span>
+                            <span className="mt-1 block text-xs leading-5">
+                              {profile.resume.description}
+                            </span>
+                          </span>
+                          <Download
+                            aria-hidden="true"
+                            className="action-arrow shrink-0 transition"
+                            size={18}
+                            strokeWidth={1.8}
+                          />
+                        </a>
+                      </motion.div>
+                    ) : null}
+                  </Fragment>
                 );
               })}
             </motion.div>
@@ -293,12 +351,11 @@ export function DigitalBusinessCard({
             </motion.div>
 
             <motion.div
-              className="footer-line flex items-center justify-center gap-2 pt-1 text-xs"
+              className="footer-line flex items-center justify-center pt-1 text-xs"
               variants={revealItem}
               transition={motionTransition}
             >
-              <QrCode aria-hidden="true" size={15} strokeWidth={1.8} />
-              <span>Netlify-ready metrics • Fast PWA</span>
+              <span>&copy; 2026 Reggie Alleyne</span>
             </motion.div>
           </section>
         </motion.article>

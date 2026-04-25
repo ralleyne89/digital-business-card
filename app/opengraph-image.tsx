@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import { profile } from "@/app/config/profile";
 
@@ -8,7 +10,12 @@ export const size = {
 };
 export const contentType = "image/png";
 
-export default function Image() {
+export default async function Image() {
+  const logoBuffer = await readFile(
+    join(process.cwd(), "public", profile.logo.src.replace(/^\//, "")),
+  );
+  const logoUrl = `data:image/png;base64,${logoBuffer.toString("base64")}`;
+
   return new ImageResponse(
     (
       <div
@@ -52,17 +59,24 @@ export default function Image() {
             >
               <div
                 style={{
-                  width: 64,
-                  height: 64,
+                  width: 76,
+                  height: 76,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  borderRadius: 20,
-                  background: "#2e1a5c",
-                  border: "1px solid rgba(196, 181, 253, 0.46)",
                 }}
               >
-                {profile.initials}
+                <img
+                  src={logoUrl}
+                  alt=""
+                  width={76}
+                  height={76}
+                  style={{
+                    width: 76,
+                    height: 76,
+                    objectFit: "contain",
+                  }}
+                />
               </div>
               Digital Business Card
             </div>
@@ -101,21 +115,24 @@ export default function Image() {
           </div>
           <div
             style={{
-              width: 210,
-              height: 210,
-              borderRadius: 56,
-              background:
-                "linear-gradient(160deg, rgba(139,92,246,0.98), rgba(196,181,253,0.7))",
+              width: 230,
+              height: 230,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: "#ffffff",
-              fontSize: 72,
-              fontWeight: 850,
-              boxShadow: "0 26px 80px rgba(139, 92, 246, 0.34)",
             }}
           >
-            {profile.initials}
+            <img
+              src={logoUrl}
+              alt=""
+              width={230}
+              height={230}
+              style={{
+                width: 230,
+                height: 230,
+                objectFit: "contain",
+              }}
+            />
           </div>
         </div>
       </div>

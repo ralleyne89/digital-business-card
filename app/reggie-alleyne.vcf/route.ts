@@ -6,9 +6,9 @@ export async function GET() {
   return new Response(buildVCard(), {
     headers: {
       "Content-Type": "text/vcard; charset=utf-8",
-      "Content-Disposition": 'attachment; filename="reggie-alleyne.vcf"',
+      "Content-Disposition":
+        'inline; filename="reggie-alleyne.vcf"; filename*=UTF-8\'\'reggie-alleyne.vcf',
       "Cache-Control": "public, max-age=3600",
     },
   });
 }
-

@@ -33,10 +33,10 @@ npm run build
 Set the deployed card URL so QR codes, sharing metadata, and canonical links point at production:
 
 ```bash
-NEXT_PUBLIC_SITE_URL=https://your-netlify-site.netlify.app
+NEXT_PUBLIC_SITE_URL=https://reggie-alleyne-digital-card.netlify.app
 ```
 
-Without this value, the in-page QR/share UI falls back to the current browser origin. Server metadata falls back to a Netlify placeholder.
+Without this value, the in-page QR/share UI falls back to the current browser origin. Server metadata falls back to the production Netlify URL.
 
 ## Netlify
 

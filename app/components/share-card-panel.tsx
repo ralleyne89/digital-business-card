@@ -36,7 +36,7 @@ export function ShareCardPanel({ configuredCardUrl }: ShareCardPanelProps) {
     () => ({
       title: profile.name,
       text: getShareText(),
-      url: cardUrl || "https://digital-business-card.netlify.app",
+      url: cardUrl || "https://reggie-alleyne-digital-card.netlify.app",
     }),
     [cardUrl],
   );
@@ -67,7 +67,7 @@ export function ShareCardPanel({ configuredCardUrl }: ShareCardPanelProps) {
     }
   }
 
-  const qrValue = cardUrl || "https://digital-business-card.netlify.app";
+  const qrValue = cardUrl || "https://reggie-alleyne-digital-card.netlify.app";
 
   return (
     <main className="grid min-h-svh place-items-center bg-[#09070d] px-4 py-8 text-white">

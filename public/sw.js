@@ -1,9 +1,10 @@
-const CACHE_NAME = "reggie-card-v2";
+const CACHE_NAME = "reggie-card-v3";
 const APP_SHELL = [
   "/",
   "/share",
   "/offline.html",
   "/images/reggie-headshot.png",
+  "/images/ra-logo-white.png",
   "/icons/icon-192.png",
   "/icons/icon-512.png",
   "/icons/apple-touch-icon.png",

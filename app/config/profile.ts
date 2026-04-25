@@ -8,9 +8,16 @@ export type ExternalLink = {
   description: string;
 };
 
+export type ResumeDownload = {
+  label: string;
+  shortLabel: string;
+  href: string;
+  description: string;
+  fileName: string;
+};
+
 export const profile = {
   name: "Reggie Alleyne",
-  initials: "RA",
   title: "Principal UX/UI Designer | AI Product Builder",
   location: "Los Angeles, CA",
   emailLabel: "Digital product, UX, and AI automation",
@@ -25,6 +32,19 @@ export const profile = {
     width: 1122,
     height: 1402,
   },
+  logo: {
+    src: "/images/ra-logo-white.png",
+    alt: "Reggie Alleyne logo",
+    width: 657,
+    height: 680,
+  },
+  resume: {
+    label: "Download Resume",
+    shortLabel: "Resume",
+    href: "/resume/Reginald_Alleyne_Resume_FINAL_2026.docx",
+    description: "AI product design resume in Word format",
+    fileName: "Reginald_Alleyne_Resume_FINAL_2026.docx",
+  } satisfies ResumeDownload,
   links: [
     {
       id: "portfolio",
@@ -61,7 +81,7 @@ export const trackedRoutes: Record<ExternalLinkId, string> = {
 export function getSiteUrl() {
   return (
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-    "https://digital-business-card.netlify.app"
+    "https://reggie-alleyne-digital-card.netlify.app"
   );
 }
 
@@ -89,4 +109,3 @@ export function getJsonLd() {
     description: profile.about,
   };
 }
-
