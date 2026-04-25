@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Poppins } from "next/font/google";
+import { Poppins, Space_Grotesk } from "next/font/google";
 import { ServiceWorkerRegister } from "@/app/components/service-worker-register";
 import { getJsonLd, getSiteUrl, profile } from "@/app/config/profile";
 import "./globals.css";
 
-const playfairDisplay = Playfair_Display({
-  variable: "--font-playfair-display",
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
   subsets: ["latin"],
-  weight: ["600", "700"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -76,7 +76,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${playfairDisplay.variable} ${poppins.variable} h-full antialiased`}
+      className={`${spaceGrotesk.variable} ${poppins.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {children}

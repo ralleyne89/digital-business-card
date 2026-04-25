@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { MotionConfig, motion, useReducedMotion } from "framer-motion";
@@ -10,7 +10,6 @@ import {
   Briefcase,
   CodeXml,
   Download,
-  FileText,
   Moon,
   Share2,
   Sun,
@@ -89,7 +88,7 @@ export function DigitalBusinessCard({
   cardUrl,
   profile,
 }: DigitalBusinessCardProps) {
-  const [theme, setTheme] = useState<Theme>("dark");
+  const [theme, setTheme] = useState<Theme>("light");
   const [resolvedCardUrl, setResolvedCardUrl] = useState(cardUrl);
   const shouldReduceMotion = useReducedMotion();
 
@@ -117,6 +116,14 @@ export function DigitalBusinessCard({
     () => resolvedCardUrl || "https://reggie-alleyne-digital-card.netlify.app",
     [resolvedCardUrl],
   );
+  const portfolioLink = useMemo(
+    () => profile.links.find((link) => link.id === "portfolio"),
+    [profile.links],
+  );
+  const secondaryLinks = useMemo(
+    () => profile.links.filter((link) => link.id !== "portfolio"),
+    [profile.links],
+  );
 
   function toggleTheme() {
     setTheme((currentTheme) => {
@@ -138,14 +145,14 @@ export function DigitalBusinessCard({
       >
         <motion.article
           aria-label={`${profile.name} digital business card`}
-          className="card-shell mx-auto flex w-full max-w-[420px] flex-col overflow-hidden rounded-[8px] border shadow-2xl"
+          className="card-shell mx-auto flex w-full max-w-[460px] flex-col overflow-hidden rounded-[28px] border"
           initial={shouldReduceMotion ? false : "hidden"}
           animate="visible"
           variants={staggerChildren}
         >
-          <section className="card-hero relative px-5 pb-6 pt-5 sm:px-6">
+          <section className="card-hero relative px-5 pb-5 pt-5 sm:px-6 sm:pb-6">
             <motion.div
-              className="mb-5 flex items-start justify-between"
+              className="mb-5 flex items-center justify-between gap-4"
               variants={revealItem}
               transition={motionTransition}
             >
@@ -163,7 +170,7 @@ export function DigitalBusinessCard({
 
               <button
                 type="button"
-                className="theme-toggle group flex h-11 items-center gap-1 rounded-[8px] border px-1.5 transition"
+                className="theme-toggle group flex h-11 items-center gap-1 rounded-full border px-1.5 transition"
                 onClick={toggleTheme}
                 aria-label={
                   theme === "dark" ? "Switch to light theme" : "Switch to dark theme"
@@ -172,39 +179,95 @@ export function DigitalBusinessCard({
                   theme === "dark" ? "Switch to light theme" : "Switch to dark theme"
                 }
               >
-                <span className="theme-icon grid size-8 place-items-center rounded-[8px]">
+                <span className="theme-icon grid size-8 place-items-center rounded-full">
                   <Sun aria-hidden="true" size={17} strokeWidth={1.9} />
                 </span>
-                <span className="theme-icon grid size-8 place-items-center rounded-[8px]">
+                <span className="theme-icon grid size-8 place-items-center rounded-full">
                   <Moon aria-hidden="true" size={17} strokeWidth={1.9} />
                 </span>
               </button>
             </motion.div>
 
             <motion.div
-              className="flex flex-col items-center text-center"
+              className="hero-grid grid items-stretch gap-5"
               variants={revealItem}
               transition={motionTransition}
             >
-              <div className="portrait-frame relative mb-6 size-[192px] overflow-hidden rounded-full sm:size-[212px]">
+              <div className="hero-copy min-w-0">
+                <p className="eyebrow mb-3 text-xs font-semibold uppercase leading-5">
+                  Product Designer & AI Technologist
+                </p>
+                <h1 className="text-balance text-[3rem] font-semibold leading-[0.98] tracking-normal sm:text-[3.55rem]">
+                  {profile.name}
+                </h1>
+
+                <motion.div
+                  className="hero-actions mt-6 grid grid-cols-1 gap-3"
+                  transition={motionTransition}
+                >
+                  {portfolioLink ? (
+                    <motion.div
+                      whileHover={shouldReduceMotion ? undefined : { y: -2 }}
+                      whileTap={
+                        shouldReduceMotion ? undefined : { scale: 0.99 }
+                      }
+                    >
+                      <Link
+                        href={trackedRoutes[portfolioLink.id]}
+                        prefetch={false}
+                        className="primary-action primary-action-filled inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition"
+                        aria-label={`${portfolioLink.label}: ${portfolioLink.description}`}
+                      >
+                        {portfolioLink.label}
+                        <ArrowUpRight
+                          aria-hidden="true"
+                          size={17}
+                          strokeWidth={1.9}
+                        />
+                      </Link>
+                    </motion.div>
+                  ) : null}
+
+                  <motion.div
+                    whileHover={shouldReduceMotion ? undefined : { y: -2 }}
+                    whileTap={shouldReduceMotion ? undefined : { scale: 0.99 }}
+                  >
+                    <a
+                      href={profile.resume.href}
+                      download={profile.resume.fileName}
+                      className="primary-action primary-action-outline inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border px-5 py-3 text-sm font-semibold transition"
+                      aria-label={`${profile.resume.label}: ${profile.resume.description}`}
+                    >
+                      <Download
+                        aria-hidden="true"
+                        size={17}
+                        strokeWidth={1.9}
+                      />
+                      {profile.resume.label}
+                    </a>
+                  </motion.div>
+                </motion.div>
+              </div>
+
+              <div className="portrait-card relative overflow-hidden rounded-[24px] border">
                 <Image
                   src={profile.headshot.src}
                   alt={profile.headshot.alt}
                   width={profile.headshot.width}
                   height={profile.headshot.height}
                   priority
-                  sizes="(min-width: 640px) 212px, 192px"
-                  className="h-full w-full object-cover object-[50%_18%]"
+                  sizes="(min-width: 480px) 154px, 100vw"
+                  className="portrait-image h-full w-full object-cover object-[50%_18%]"
                 />
+                <div className="portrait-caption absolute inset-x-3 bottom-3 rounded-[18px] px-3 py-2">
+                  <span className="block text-xs font-semibold">
+                    Trust-first product systems
+                  </span>
+                  <span className="mt-0.5 block text-[0.68rem] leading-4">
+                    UX / AI / React prototypes
+                  </span>
+                </div>
               </div>
-
-              <h1 className="max-w-[12ch] text-balance text-[3.2rem] font-semibold leading-[0.96] tracking-normal sm:text-[3.7rem]">
-                {profile.name}
-              </h1>
-              <span className="title-accent mt-4 block h-1 w-16 rounded-full" />
-              <p className="role-title mt-5 max-w-[22rem] text-balance text-xl font-medium leading-7">
-                {profile.title}
-              </p>
             </motion.div>
           </section>
 
@@ -214,79 +277,40 @@ export function DigitalBusinessCard({
               variants={revealItem}
               transition={motionTransition}
             >
-              {profile.links.map((link) => {
+              {secondaryLinks.map((link) => {
                 const Icon = linkIcons[link.id];
 
                 return (
-                  <Fragment key={link.id}>
-                    <motion.div
-                      whileHover={shouldReduceMotion ? undefined : { y: -2 }}
-                      whileTap={shouldReduceMotion ? undefined : { scale: 0.99 }}
+                  <motion.div
+                    key={link.id}
+                    whileHover={shouldReduceMotion ? undefined : { y: -2 }}
+                    whileTap={shouldReduceMotion ? undefined : { scale: 0.99 }}
+                  >
+                    <Link
+                      href={trackedRoutes[link.id]}
+                      prefetch={false}
+                      className="action-row group flex min-h-[76px] items-center gap-4 rounded-[18px] border px-4 py-3 transition"
+                      aria-label={`${link.label}: ${link.description}`}
                     >
-                      <Link
-                        href={trackedRoutes[link.id]}
-                        prefetch={false}
-                        className="action-row group flex min-h-[76px] items-center gap-4 rounded-[8px] border px-4 py-3 transition"
-                        aria-label={`${link.label}: ${link.description}`}
-                      >
-                        <span className="action-icon grid size-12 shrink-0 place-items-center rounded-[8px]">
-                          <Icon aria-hidden="true" size={22} strokeWidth={1.8} />
+                      <span className="action-icon grid size-11 shrink-0 place-items-center rounded-full">
+                        <Icon aria-hidden="true" size={21} strokeWidth={1.8} />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-[1rem] font-semibold">
+                          {link.label}
                         </span>
-                        <span className="min-w-0 flex-1">
-                          <span className="block text-[1.05rem] font-semibold">
-                            {link.label}
-                          </span>
-                          <span className="mt-1 block text-xs leading-5">
-                            {link.description}
-                          </span>
+                        <span className="mt-1 block text-xs leading-5">
+                          {link.description}
                         </span>
-                        <ArrowUpRight
-                          aria-hidden="true"
-                          className="action-arrow shrink-0 transition"
-                          size={18}
-                          strokeWidth={1.8}
-                        />
-                      </Link>
-                    </motion.div>
-
-                    {link.id === "portfolio" ? (
-                      <motion.div
-                        whileHover={shouldReduceMotion ? undefined : { y: -2 }}
-                        whileTap={
-                          shouldReduceMotion ? undefined : { scale: 0.99 }
-                        }
-                      >
-                        <a
-                          href={profile.resume.href}
-                          download={profile.resume.fileName}
-                          className="action-row group flex min-h-[76px] items-center gap-4 rounded-[8px] border px-4 py-3 transition"
-                          aria-label={`${profile.resume.label}: ${profile.resume.description}`}
-                        >
-                          <span className="action-icon grid size-12 shrink-0 place-items-center rounded-[8px]">
-                            <FileText
-                              aria-hidden="true"
-                              size={22}
-                              strokeWidth={1.8}
-                            />
-                          </span>
-                          <span className="min-w-0 flex-1">
-                            <span className="block text-[1.05rem] font-semibold">
-                              {profile.resume.label}
-                            </span>
-                            <span className="mt-1 block text-xs leading-5">
-                              {profile.resume.description}
-                            </span>
-                          </span>
-                          <Download
-                            aria-hidden="true"
-                            className="action-arrow shrink-0 transition"
-                            size={18}
-                            strokeWidth={1.8}
-                          />
-                        </a>
-                      </motion.div>
-                    ) : null}
-                  </Fragment>
+                      </span>
+                      <ArrowUpRight
+                        aria-hidden="true"
+                        className="action-arrow shrink-0 transition"
+                        size={18}
+                        strokeWidth={1.8}
+                      />
+                    </Link>
+                  </motion.div>
                 );
               })}
             </motion.div>
@@ -299,7 +323,7 @@ export function DigitalBusinessCard({
               <Link
                 href="/share"
                 prefetch={false}
-                className="utility-card secondary-action flex flex-col gap-3 rounded-[8px] border p-4 transition"
+                className="utility-card secondary-action flex flex-col gap-3 rounded-[20px] border p-4 transition"
               >
                 <span className="flex items-center gap-3 text-base font-semibold">
                   <Share2 aria-hidden="true" size={22} strokeWidth={1.8} />
@@ -322,7 +346,7 @@ export function DigitalBusinessCard({
               <Link
                 href="/go/contact"
                 prefetch={false}
-                className="utility-card secondary-action flex flex-col justify-between gap-4 rounded-[8px] border p-4 transition"
+                className="utility-card secondary-action flex flex-col justify-between gap-4 rounded-[20px] border p-4 transition"
               >
                 <span className="flex items-center gap-3 text-base font-semibold">
                   <UserRoundPlus aria-hidden="true" size={22} strokeWidth={1.8} />
@@ -331,7 +355,7 @@ export function DigitalBusinessCard({
                 <span className="block text-sm leading-6">
                   Add my public links to your contacts.
                 </span>
-                <span className="save-vcard-button mt-auto flex min-h-11 items-center justify-center gap-2 rounded-[8px] border px-3 text-sm font-semibold">
+                <span className="save-vcard-button mt-auto flex min-h-11 items-center justify-center gap-2 rounded-full border px-3 text-sm font-semibold">
                   <Download aria-hidden="true" size={18} strokeWidth={1.8} />
                   Save vCard
                 </span>
@@ -339,7 +363,7 @@ export function DigitalBusinessCard({
             </motion.div>
 
             <motion.div
-              className="about-card rounded-[8px] border p-4"
+              className="about-card rounded-[20px] border p-4"
               variants={revealItem}
               transition={motionTransition}
             >

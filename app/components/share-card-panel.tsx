@@ -1,18 +1,34 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
-import { Check, Copy, Home, Share2 } from "lucide-react";
+import { ArrowUpRight, Check, Copy, Home, Share2 } from "lucide-react";
 import { getShareText, profile } from "@/app/config/profile";
 
 type ShareCardPanelProps = {
   configuredCardUrl: string;
 };
 
+type Theme = "dark" | "light";
+
 export function ShareCardPanel({ configuredCardUrl }: ShareCardPanelProps) {
   const [cardUrl, setCardUrl] = useState(configuredCardUrl);
   const [status, setStatus] = useState("");
+  const [theme, setTheme] = useState<Theme>("light");
+
+  useEffect(() => {
+    const frameId = window.requestAnimationFrame(() => {
+      const storedTheme = window.localStorage.getItem("reggie-card-theme");
+
+      if (storedTheme === "dark" || storedTheme === "light") {
+        setTheme(storedTheme);
+      }
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, []);
 
   useEffect(() => {
     const frameId = window.requestAnimationFrame(() => {
@@ -70,19 +86,35 @@ export function ShareCardPanel({ configuredCardUrl }: ShareCardPanelProps) {
   const qrValue = cardUrl || "https://reggie-alleyne-digital-card.netlify.app";
 
   return (
-    <main className="grid min-h-svh place-items-center bg-[#09070d] px-4 py-8 text-white">
-      <section className="w-full max-w-[420px] rounded-[8px] border border-white/12 bg-[#12101a] p-5 shadow-2xl shadow-black/40">
+    <main
+      className="card-page share-page grid min-h-svh place-items-center px-4 py-8"
+      data-theme={theme}
+    >
+      <section className="share-shell w-full max-w-[440px] rounded-[28px] border p-5 sm:p-6">
         <div className="mb-6 flex items-center justify-between gap-4">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-[0.18em] text-[#c4b5fd]">
-              Share card
-            </p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-normal">
-              {profile.name}
-            </h1>
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="brand-logo share-logo" aria-label={profile.logo.alt}>
+              <Image
+                src={profile.logo.src}
+                alt=""
+                width={profile.logo.width}
+                height={profile.logo.height}
+                priority
+                sizes="48px"
+                className="brand-logo-image"
+              />
+            </span>
+            <div className="min-w-0">
+              <p className="eyebrow text-xs font-semibold uppercase leading-5">
+                Share card
+              </p>
+              <h1 className="mt-1 text-3xl font-semibold tracking-normal">
+                {profile.name}
+              </h1>
+            </div>
           </div>
           <Link
-            className="grid size-11 place-items-center rounded-[8px] border border-white/12 text-white/70 transition hover:bg-white/6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#c4b5fd]"
+            className="icon-home grid size-11 shrink-0 place-items-center rounded-full border transition"
             href="/"
             aria-label="Return to card"
           >
@@ -90,8 +122,8 @@ export function ShareCardPanel({ configuredCardUrl }: ShareCardPanelProps) {
           </Link>
         </div>
 
-        <div className="rounded-[8px] border border-[#8B5CF6]/40 bg-[#100820] p-4">
-          <div className="mx-auto grid size-[220px] place-items-center rounded-[8px] bg-white p-4 text-[#07110e]">
+        <div className="share-qr-panel rounded-[24px] border p-4">
+          <div className="share-qr-code mx-auto grid size-[220px] place-items-center rounded-[22px] bg-white p-4 text-[#07110e]">
             <QRCodeSVG
               value={qrValue}
               size={188}
@@ -102,7 +134,7 @@ export function ShareCardPanel({ configuredCardUrl }: ShareCardPanelProps) {
               title={`${profile.name} digital card QR code`}
             />
           </div>
-          <p className="mt-4 break-words text-center text-sm leading-6 text-white/62">
+          <p className="share-url mt-4 break-words text-center text-sm leading-6">
             {qrValue}
           </p>
         </div>
@@ -110,7 +142,7 @@ export function ShareCardPanel({ configuredCardUrl }: ShareCardPanelProps) {
         <div className="mt-5 grid grid-cols-1 gap-3 min-[380px]:grid-cols-2">
           <button
             type="button"
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[8px] border border-[#8B5CF6]/45 bg-[#8B5CF6] px-4 text-sm font-semibold text-white transition hover:bg-[#a78bfa] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#c4b5fd]"
+            className="share-action share-action-filled inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold transition"
             onClick={shareCard}
           >
             <Share2 aria-hidden="true" size={18} strokeWidth={1.8} />
@@ -118,7 +150,7 @@ export function ShareCardPanel({ configuredCardUrl }: ShareCardPanelProps) {
           </button>
           <button
             type="button"
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[8px] border border-white/12 bg-white/5 px-4 text-sm font-semibold text-white transition hover:bg-white/8 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#c4b5fd]"
+            className="share-action share-action-outline inline-flex min-h-12 items-center justify-center gap-2 rounded-full border px-4 text-sm font-semibold transition"
             onClick={copyLink}
           >
             {status === "Link copied" ? (
@@ -130,7 +162,16 @@ export function ShareCardPanel({ configuredCardUrl }: ShareCardPanelProps) {
           </button>
         </div>
 
-        <p className="mt-4 min-h-6 text-center text-sm text-[#c4b5fd]" aria-live="polite">
+        <Link
+          className="share-portfolio-link mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full text-sm font-semibold transition"
+          href="/go/portfolio"
+          prefetch={false}
+        >
+          View selected work
+          <ArrowUpRight aria-hidden="true" size={16} strokeWidth={1.9} />
+        </Link>
+
+        <p className="share-status mt-4 min-h-6 text-center text-sm" aria-live="polite">
           {status}
         </p>
       </section>
